@@ -1,0 +1,6 @@
+.DS_Store
+.env
+
+/export
+/logs
+anon.session

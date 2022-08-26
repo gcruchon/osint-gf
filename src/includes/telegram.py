@@ -3,12 +3,13 @@ from telethon import TelegramClient
 from includes import log, helpers
 from asyncstdlib import builtins
 from os import path, environ, makedirs
+from datetime import date, timedelta
 
 TG_API_ID = environ["TG_API_ID"]
 TG_API_HASH = environ["TG_API_HASH"]
 
 EXPORT_BASE_FOLDER = "export"
-LIMIT_MESSAGES = 33
+NUMBER_OF_DAYS_TO_RETRIEVE = 1
 SKIP_SAVING_VIDEOS = True
 
 
@@ -107,9 +108,7 @@ class Telegram:
         grouped_id = message.grouped_id
         log.info(
             "channel({}) - add_to_albums[{}] message({}))".format(
-                self.__get_message_channel_id(message),
-                grouped_id,
-                message.id
+                self.__get_message_channel_id(message), grouped_id, message.id
             )
         )
         if grouped_id in albums:
@@ -127,16 +126,17 @@ class Telegram:
         log.info("Saving album - {} messages".format(len(messages)))
         for idx, message in enumerate(messages):
             log.info("\tMessage #{}".format(idx))
-            file = open(
-                "{}.txt".format(self.__get_album_path(message)), "w", encoding="utf-8"
-            )
-            file.write(
-                "Channel ID ={}\n\n".format(self.__get_message_channel_id(message))
-            )
-            for att in dir(message):
-                if not att.startswith("_") and not helpers.has_method(message, att):
-                    file.write("{}={}\n\n".format(att, getattr(message, att)))
-            file.close()
+            if idx == 0:
+                file = open(
+                    "{}.txt".format(self.__get_album_path(message)), "w", encoding="utf-8"
+                )
+                file.write(
+                    "Channel ID ={}\n\n".format(self.__get_message_channel_id(message))
+                )
+                for att in dir(message):
+                    if not att.startswith("_") and not helpers.has_method(message, att):
+                        file.write("{}={}\n\n".format(att, getattr(message, att)))
+                file.close()
 
             await self.__save_media(message, is_album=True)
 
@@ -149,8 +149,9 @@ class Telegram:
             log.info("{} is excluded -- skipped".format(title))
         else:
             albums = {}
+            offset_date = date.today() - timedelta(days=(NUMBER_OF_DAYS_TO_RETRIEVE-1))
             async for message in self.__client.iter_messages(
-                channel_entity, limit=LIMIT_MESSAGES
+                channel_entity, offset_date=offset_date, reverse=True
             ):
                 if message.grouped_id:
                     log.debug(

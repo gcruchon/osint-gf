@@ -6,7 +6,7 @@ from os import path, environ, makedirs
 from datetime import date, timedelta
 
 TG_API_ID = environ["TG_API_ID"]
-TG_API_HASH = environ["TG_API_HASH"]
+TG_API_HASH = "{}".format(environ["TG_API_HASH"])
 
 EXPORT_BASE_FOLDER = "export"
 NUMBER_OF_DAYS_TO_RETRIEVE = 1

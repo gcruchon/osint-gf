@@ -1,6 +1,11 @@
 .DS_Store
 .env
+.db_username
+.db_password
+.db_root_username
+.db_root_password
 
+/data
 /export
 /logs
 anon.session

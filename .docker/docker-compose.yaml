@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  mongodb:
+    build: ./mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - ../data/mongo:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/db_root_username
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MONGO_DATABASE: telegram
+      MONGO_USERNAME_FILE: /run/secrets/db_username
+      MONGO_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_root_username
+      - db_root_password
+      - db_username
+      - db_password
+
+secrets:
+  db_root_username:
+    file: mongodb/.db_root_username
+  db_root_password:
+    file: mongodb/.db_root_password
+  db_username:
+    file: mongodb/.db_username
+  db_password:
+    file: mongodb/.db_password

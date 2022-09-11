@@ -1,4 +1,4 @@
-from includes import telegram, log
+from includes import telegram, log, mongo
 
 log.info("------------ NEW RUN ------------")
 
@@ -9,7 +9,8 @@ ADDITIONNAL_CHANNEL_URLS = ["https://t.me/UkraineNow"]
 SKIP_MY_CHANNELS = True
 SKIP_ADDITIONNAL_CHANNELS = False
 
-tg = telegram.Telegram()
+mongo_telegram = mongo.MongoTelegram()
+tg = telegram.Telegram(mongo_telegram)
 tg.set_excluded_channels(EXCLUDED_CHANNEL_URLS)
 
 

@@ -14,7 +14,8 @@ SKIP_SAVING_VIDEOS = True
 
 
 class Telegram:
-    def __init__(self):
+    def __init__(self, db=None):
+        self.__db = db
         self.__client = TelegramClient("anon", TG_API_ID, TG_API_HASH)
         self.__excluded_channels = None
         self.__excluded_ids = None
@@ -88,19 +89,40 @@ class Telegram:
                 )  # printed after download is done
 
     async def __save_message(self, message):
-        log.info(
-            "channel({}) - save_message({})".format(
-                self.__get_message_channel_id(message), message.id
+        channel_id = "{}".format(self.__get_message_channel_id(message))
+        log.info("channel({}) - save_message({})".format(channel_id, message.id))
+        if self.__db == None:
+            file = open(
+                "{}.txt".format(self.__get_message_path(message)), "w", encoding="utf-8"
             )
-        )
-        file = open(
-            "{}.txt".format(self.__get_message_path(message)), "w", encoding="utf-8"
-        )
-        file.write("Channel ID ={}\n\n".format(self.__get_message_channel_id(message)))
-        for att in dir(message):
-            if not att.startswith("_") and not helpers.has_method(message, att):
-                file.write("{}={}\n\n".format(att, getattr(message, att)))
-        file.close()
+            file.write(
+                "Channel ID ={}\n\n".format(self.__get_message_channel_id(message))
+            )
+            for att in dir(message):
+                if not att.startswith("_") and not helpers.has_method(message, att):
+                    file.write("{}={}\n\n".format(att, getattr(message, att)))
+            file.close()
+        else:
+            message_dict = {}
+            message_dict["channel_id"] = channel_id
+            message_dict["chat_id"] = getattr(message, "chat_id")
+            message_dict["message_id"] = getattr(message, "id")
+            message_dict["date"] = getattr(message, "date")
+            message_dict["edit_date"] = getattr(message, "edit_date")
+            message_dict["grouped_id"] = getattr(message, "grouped_id")
+            message_dict["legacy"] = getattr(message, "legacy")
+            message_dict["is_reply"] = getattr(message, "is_reply")
+            message_dict["mentioned"] = getattr(message, "mentioned")
+            message_dict["message"] = getattr(message, "message")
+            message_dict["pinned"] = getattr(message, "pinned")
+            message_dict["raw_text"] = getattr(message, "raw_text")
+            message_dict["sender_id"] = getattr(message, "sender_id")
+            message_dict["text"] = getattr(message, "text")
+            message_dict["via_bot"] = getattr(message, "via_bot")
+            message_dict["via_bot_id"] = getattr(message, "via_bot_id")
+            message_dict["via_input_bot"] = getattr(message, "via_input_bot")
+            message_dict["views"] = getattr(message, "views")
+            self.__db.insert_message(message_dict)
 
         await self.__save_media(message)
 
@@ -128,7 +150,9 @@ class Telegram:
             log.info("\tMessage #{}".format(idx))
             if idx == 0:
                 file = open(
-                    "{}.txt".format(self.__get_album_path(message)), "w", encoding="utf-8"
+                    "{}.txt".format(self.__get_album_path(message)),
+                    "w",
+                    encoding="utf-8",
                 )
                 file.write(
                     "Channel ID ={}\n\n".format(self.__get_message_channel_id(message))
@@ -149,7 +173,9 @@ class Telegram:
             log.info("{} is excluded -- skipped".format(title))
         else:
             albums = {}
-            offset_date = date.today() - timedelta(days=(NUMBER_OF_DAYS_TO_RETRIEVE-1))
+            offset_date = date.today() - timedelta(
+                days=(NUMBER_OF_DAYS_TO_RETRIEVE - 1)
+            )
             async for message in self.__client.iter_messages(
                 channel_entity, offset_date=offset_date, reverse=True
             ):

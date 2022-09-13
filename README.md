@@ -18,39 +18,30 @@ brew install mongosh
 
 ### MongoDB
 
-CHange directory to `.docker/mongodb`.
+Change directory to `.docker/mongodb`.
 
-Create a `.db_root_username` file:
+Create the following files:
+
+-  `.db_root_username`: contains the username for the admin user of MongoDB
+-  `.db_root_password`: contains the password for the admin user of MongoDB
+-  `.db_username`: contains the username for the regular user of MongoDB
+-  `.db_password`: contains the password for the regular user of MongoDB
+-  `.db_basicauth_username`: contains the username for the basic auth access to Mongo-Express
+-  `.db_basicauth_password`: contains the password for the basic auth access to Mongo-Express
+
+For this, you can copy the sample files:
 
 ```sh
+cd .docker/mongodb
 cp .db_root_username-sample .db_root_username
-```
-
-Edit `.db_root_username` to ceate your superuser username
-
-Create a `.db_root_password` file:
-
-```sh
 cp .db_root_password-sample .db_root_password
-```
-
-Edit `.db_root_password` to ceate your superuser password
-
-Create a `.db_username` file:
-
-```sh
 cp .db_username-sample .db_username
-```
-
-Edit `.db_username` to ceate your regular user username
-
-Create a `.db_password` file:
-
-```sh
 cp .db_password-sample .db_password
+cp .db_basicauth_username-sample .db_basicauth_username
+cp .db_basicauth_password-sample .db_basicauth_password
 ```
 
-Edit `.db_root_password` to ceate your regulare user password
+And then edit each file to match your own username / passwords.
 
 ### Application
 

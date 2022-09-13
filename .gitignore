@@ -4,6 +4,8 @@
 .db_password
 .db_root_username
 .db_root_password
+.db_basicauth_username
+.db_basicauth_password
 
 /data
 /export

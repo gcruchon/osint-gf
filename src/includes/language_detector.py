@@ -1,5 +1,6 @@
 import fasttext
 from os import path
+from includes import log
 
 MODEL_DIR = path.join(path.dirname(path.realpath(__file__)), "..", "models")
 LIGHT_MODEL = path.join(MODEL_DIR, "lid.176.ftz")
@@ -10,9 +11,10 @@ LANG_UNDEFINED = "Undefined"
 
 class LanguageDetector:
     def __init__(self):
-        print(LIGHT_MODEL)
         pretrained_lang_model = LIGHT_MODEL
+        log.debug("Model used: {}".format(pretrained_lang_model))
         self._model = fasttext.load_model(pretrained_lang_model)
+        log.info("Model loaded.")
 
     def _clean_text(self, text):
         return text.replace("\n", "")

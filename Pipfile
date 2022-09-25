@@ -9,6 +9,7 @@ asyncio = "*"
 asyncstdlib = "*"
 pymongo = "*"
 boto3 = "*"
+fasttext = "*"
 
 [dev-packages]
 black = "*"

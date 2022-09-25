@@ -2,6 +2,14 @@
 
 ## Prerequisites
 
+Python: v3.9.14
+
+Install Pipenv:
+
+```sh
+brew install pipenv
+```
+
 Install Docker:
 
 ```sh
@@ -13,6 +21,13 @@ Install `mongosh` (replacement of Mongo Shell)
 ```sh
 brew install mongosh
 ```
+
+Install AWS Cli:
+
+```sh
+brew install awscli
+```
+
 
 ## Configure
 
@@ -51,13 +66,24 @@ Create a `.env` file in the root folder:
 cp .env-sample .env
 ```
 
+### Localstack
+
+Create a default bucket name `osint` on your localstack S3 emulation
+
+```sh
+aws --endpoint-url=http://localhost:4566 --no-sign-request s3 mb s3://osint
+```
+
 Change variables:
 
 - `TG_API_ID`
 - `TG_API_HASH`
 - `MONGODB_USERNAME`: password to access your MongoDB (same value as in `.db_username`)
 - `MONGODB_PASSWORD`: password to access your MongoDB (same value as in `.db_password`)
-
+- `AWS_ACCESS_KEY_ID`: AWS Credentials
+- `AWS_SECRET_ACCESS_KEY`: AWS Credentials
+- `AWS_REGION_NAME`: AWS Region (e.g. 'us-east-1')
+- `AWS_BUCKET_NAME`: AWS location for the telegram files
 
 ## Usage
 

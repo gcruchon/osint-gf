@@ -3,6 +3,7 @@ version: '3.9'
 services:
   mongodb:
     build: ./mongodb
+    container_name: osint-gf-mongodb
     restart: always
     ports:
       - 27017:27017
@@ -23,11 +24,12 @@ services:
 
   mongo-express:
     image: mongo-express
+    container_name: osint-gf-mongo-express
     restart: always
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_SITE_BASEURL: /
@@ -42,6 +44,21 @@ services:
       - db_basicauth_password
     depends_on:
       - mongodb
+
+
+  localstack:
+    image: localstack/localstack:1.1
+    container_name: localstack_main
+    environment: 
+      - EDGE_PORT=4566
+      - PERSISTENCE=1
+      - DEBUG=1
+    ports: 
+      - 4566:4566
+      - "4510-4559:4510-4559"
+    volumes:
+      - ../data/s3:/var/lib/localstack
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 secrets:
   db_root_username:

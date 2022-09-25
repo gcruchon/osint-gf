@@ -8,9 +8,11 @@ telethon = "*"
 asyncio = "*"
 asyncstdlib = "*"
 pymongo = "*"
+boto3 = "*"
 
 [dev-packages]
 black = "*"
+localstack = "*"
 
 [requires]
 python_version = "3.9"

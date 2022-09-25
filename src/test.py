@@ -1,4 +1,4 @@
-from includes import telegram, log, mongo
+from includes import telegram, log, mongo, s3
 
 log.info("------------ NEW RUN ------------")
 
@@ -10,7 +10,9 @@ SKIP_MY_CHANNELS = True
 SKIP_ADDITIONNAL_CHANNELS = False
 
 mongo_telegram = mongo.MongoTelegram()
-tg = telegram.Telegram(mongo_telegram)
+s3_storage = s3.AwsStorage()
+
+tg = telegram.Telegram(db=mongo_telegram, file_storage=s3_storage)
 tg.set_excluded_channels(EXCLUDED_CHANNEL_URLS)
 
 

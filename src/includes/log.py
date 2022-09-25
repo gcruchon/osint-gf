@@ -12,3 +12,6 @@ def info(msg):
 
 def debug(msg):
     logging.debug(msg)
+
+def error(msg):
+    logging.error(msg)

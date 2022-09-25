@@ -5,6 +5,7 @@ MODEL_DIR = path.join(path.dirname(path.realpath(__file__)), "..", "models")
 LIGHT_MODEL = path.join(MODEL_DIR, "lid.176.ftz")
 HEAVY_MODEL = path.join(MODEL_DIR, "lid.176.bin")
 CONFIDENCE_THRESHOLD = 0.9
+LANG_UNDEFINED = "Undefined"
 
 
 class LanguageDetector:
@@ -32,6 +33,6 @@ class LanguageDetector:
     def get_language(self, text):
         languages = self._get_languages(text)
         if len(languages) == 0:
-            return "Undefined"
+            return LANG_UNDEFINED
         else:
             return languages[0].replace("__label__", "")

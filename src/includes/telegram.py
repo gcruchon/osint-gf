@@ -34,6 +34,7 @@ class Telegram:
 
     async def _get_channel_id(self, url):
         channel = await self._client.get_entity(url)
+        log.info("Channel ID({}): {}".format(url, channel.id))
         return channel.id
 
     async def _is_excluded(self, channel_id):
@@ -43,7 +44,14 @@ class Telegram:
             self._excluded_ids = await builtins.list(
                 builtins.map(self._get_channel_id, self._excluded_channels)
             )
-        return channel_id in self._excluded_channels
+            log.info(
+                "List of excluded channels initialized: {}".format(self._excluded_ids)
+            )
+
+        is_excluded = channel_id in self._excluded_ids
+        log.info("Is channel excluded({}): {}".format(channel_id, is_excluded))
+
+        return is_excluded
 
     def _get_message_channel_id(self, message):
         if hasattr(message, "peer_id") and hasattr(message.peer_id, "channel_id"):
@@ -168,9 +176,12 @@ class Telegram:
 
     async def _save_albums(self, albums):
         log.info("Saving albums")
+        nb_messages = 0
         for grouped_id in albums:
             log.info("Grouped Id: {}".format(grouped_id))
             await self._save_album(albums[grouped_id])
+            nb_messages += 1
+        return nb_messages
 
     async def _save_album(self, messages):
         log.info("Saving album - {} messages".format(len(messages)))
@@ -188,6 +199,7 @@ class Telegram:
     async def save_channel(self, channel_entity):
         title = channel_entity.title
         channel_id = channel_entity.id
+        nb_messages = 0
 
         log.info("Saving channel ({}): {}".format(channel_id, title))
         if await self._is_excluded(channel_id):
@@ -209,11 +221,14 @@ class Telegram:
                     self._add_to_albums(message, albums)
                 else:
                     await self._save_message(message)
+                    nb_messages += 1
 
-            await self._save_albums(albums)
+            nb_messages += await self._save_albums(albums)
+
+        return nb_messages
 
 
 class TelegramException(Exception):
-    """Exception class for the project"""
+    """Exception class for Telegram"""
 
     pass

@@ -36,4 +36,4 @@ RUN mkdir -p logs
 RUN mkdir -p export
 
 # Run the application
-ENTRYPOINT ["python", "test.py"]
+ENTRYPOINT ["python", "retrieve_telegram_messages.py"]

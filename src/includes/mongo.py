@@ -15,6 +15,8 @@ class MongoTelegram:
         )
         self._db = self._client["telegram"]
         self._messages = self._db.messages
+        self._messages.create_index("lang")
+        self._messages.create_index("translation")
         log.info("Mongo Client Created")
 
     def insert_message(self, message):

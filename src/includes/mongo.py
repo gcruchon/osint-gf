@@ -30,9 +30,47 @@ class MongoTelegram:
         )
         return messages
 
-    def add_lang_to_message(self, message_id, lang, web_preview = None):
+    def get_messages_to_be_translated(self, destination_language):
+        log.info("Get messages without lang")
+        messages = self._messages.find(
+            filter={
+                "$and": [
+                    {"translation": {"$exists": False}},
+                    {"lang": {"$ne": destination_language}},
+                ]
+            },
+            projection={
+                "_id": True,
+                "raw_text": True,
+                "lang": True,
+                "web_preview": True,
+            },
+        )
+        return messages
+
+    def add_lang_to_message(self, message_id, lang, web_preview=None):
         message_filter = {"_id": message_id}
-        lang_values = {"$set": {"lang": lang, "lang_detected": datetime.utcnow()}}
+        lang_values = {"$set": {"lang": lang, "date_lang_detected": datetime.utcnow()}}
+        if web_preview != None:
+            lang_values["$set"]["web_preview"] = web_preview
+        result = self._messages.update_one(message_filter, lang_values)
+        if result.modified_count != 1:
+            raise MongoTelegramException(
+                "Error when trying to update language of the following message ({})".format(
+                    message_id
+                )
+            )
+        log.info(
+            "Lang added to message ({}): {}".format(message_id, result.modified_count)
+        )
+
+    def add_translation_to_message(
+        self, message_id, translation=None, web_preview=None
+    ):
+        message_filter = {"_id": message_id}
+        lang_values = {"$set": {"date_translated": datetime.utcnow()}}
+        if translation != None:
+            lang_values["$set"]["translation"] = translation
         if web_preview != None:
             lang_values["$set"]["web_preview"] = web_preview
         result = self._messages.update_one(message_filter, lang_values)
